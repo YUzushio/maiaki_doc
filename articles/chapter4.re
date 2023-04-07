@@ -336,470 +336,788 @@ ISBN-13  :  978-4297127930
 ===[/mycolumn]
 
 
+== クラスター化とKurbernetes
 
-
-
-
-#@# textlint-disable prh
-== @<code>{git clone}
-#@# textlint-enable prh
-
-ではリポジトリのcloneを行いましょう。
-次のコマンドをたたき、リポジトリのルートディレクトリへ移動します。
-
-//cmd{
-$ git clone https://github.com/at-grandpa/review-and-css-typesetting.git
-$ cd review-and-css-typesetting
+//imagetalkl[mai_nutoral]{
+さて、ここまででITインフラの基礎知識をさらって見たわけだけど、この知識を使って覚えておきたいことがある。コンテナオーケストレーションツール、Kubernetesを使ったサーバーのクラスター化だ。
 //}
 
-個々人のリポジトリで使用する場合、cloneしたディレクトリ群をコピーして使用してください。
-
-== 執筆するファイルの配置場所
-
-執筆するファイルの配置場所は @<code>{./articles} 以下です。
-このディレクトリ内は、Re:VIEWのファイル配置規則にしたがってください。
-@<code>{review-init} で生成されるディレクトリを @<code>{./articles} に置き換えていただければ大丈夫です。
-もし最初から執筆を行う場合は、このあとに説明するコマンド @<code>{make init} を叩いてください。
-このコマンドは、@<code>{./articles} ディレクトリ内を初期化（@<code>{review-init articles}を実行した状態）するコマンドです。
-
-== コマンドの使い方
-
-主なコマンドを見ていきましょう。
-次のコマンドはすべてリポジトリルートで実行するコマンドです。
-
- * @<code>{make setup}
- ** Re:VIEW+CSS組版環境の構築を行う
- * @<code>{make init}
- ** @<code>{./articles} 内を初期化する
- * @<code>{make pdf}
- ** PDFを生成する
- * @<code>{make browser}
- ** vivliostyleを用いてブラウザで開く
- ** デベロッパーール等でCSSの確認ができる
- * @<code>{make lint}
- ** textlint, prh によるlint
- * @<code>{make lint/fix}
- ** prh の自動修正
-
-リポジトリのclone後は @<code>{make setup} を叩いて環境を構築します。
-環境を構築したら、 @<code>{make pdf}, @<code>{make browser}, @<code>{make lint} などを使用して執筆していきます。
-
-その他のコマンドについてはhelpを参照してください。
-@<code>{make} とたたくか @<code>{make help} とたたくことでhelpを表示できます。
-
-//cmd{
-$ make help
-
-    review-and-css-typesetting
-
-    usage: make [command]
-
-    help       ヘルプを表示
-    args       デフォルトの変数を表示する
-    setup      docker環境をセットアップする
-    build      dockerイメージをbuildする
-    up         dockerコンテナを立ち上げる
-    clean      dockerコンテナを停止して削除する
-    stop       dockerコンテナを停止する
-    rm         dockerコンテナを削除する
-    ps         dockerコンテナ一覧を表示する
-    login      dockerコンテナ内にログインする
-    init       ./article配下を削除して、review-initで./articlesを再生成する
-    html       htmlを生成する (./articles/book.html)
-    pdf        PDFを生成する (default: ./articles/book.pdf) (出力先変更: make pdf PDF=./hoge.pdf)
-    browser    ブラウザで表示する (vivliostyle経由)
-    lint       textlint, prhでlintをかける
-    lint/fix   prhの指摘点を自動修正する
-
+//imagetalkr[akina_nutoral]{
+あ、また出てきましたね。Kubernetes
 //}
 
-== 執筆の流れ
-
-続いて、具体的な執筆の流れを説明していきます。
-
-=== @<code>{*.re} ファイルを書いていく
-
-Re:VIEW記法で書く @<code>{*.re} ファイルは @<code>{./articles} ディレクトリに配置します。
-このディレクトリの中に @<code>{catalog.yml} があるので、それに沿って書いていきます。
-詳しくは、Re:VIEW本家のドキュメントを御覧ください。
-
-=== ブラウザで内容を確認する
-
-ある程度執筆したら、ブラウザで内容を確認しましょう。
-@<code>{make browser} コマンドをたたくとブラウザで内容を確認できます（@<code>{open}コマンドでURLを叩いています。macOS限定です。環境によってMakefileを書き換えてください）。
-vivliostyle経由で閲覧でき、Chrome DevTools などを用いればCSSの一時的な変更もできます。
-微調整に最適です。
-
-=== CSSを編集する
-
-CSSファイルは @<code>{./articles/style.css} です。
-このPDF生成の @<code>{style.css} は、vvakameさんのCSS組版リポジトリのファイルを参考にしています。
-対象のhtmlは @<code>{./articles/book.html} です。
-ブラウザでの確認をもとに、CSSファイルを編集していきましょう。
-見た目の確認は @<code>{make browser} でもできますが、最終的にできあがるPDFとは若干デザインが異なるのでPDFの確認も行いましょう。
-
-=== lintをかける
-
-@<code>{make lint} でtextlintとprhを用いたlintをかけることができます。
-デフォルトでは @<code>{./textlintrc} の設定を元にしています。
-@<code>{preset-ja-technical-writing} や @<code>{period-in-list-item} のルールはすでにインストール済みです。
-prhの設定に関しては、 @<code>{./prh-rules} ディレクトリに配置しています。
-次のリポジトリを参考にさせていただきました。
-
- * https://github.com/prh/rules
-
-適宜必要な設定に書き換えて使用してください。
-
-=== PDFを生成する
-
-PDF生成は @<code>{make pdf} コマンドです。
-目次のリンクやURLのリンクも適用済みです。
-@<code>{make browser} の結果とは若干異なるので、最終的なチェックはPDFで行いましょう。
-
-=== circleciでPDF生成やlintをチェックする
-
-@<code>{./.circleci/config.yml} にcircleciでの設定が書かれています。
-lintとPDF生成を行っています。
-必要であれば適宜書き換えてください。
-
-=== フォントの埋め込みをする
-
-印刷所に入稿するときは、PDFにフォントを埋め込まなければいけません。
-自動で埋め込みができているとよいのですが現状できていません。
-macOSの場合は @<code>{プレビュー.app} を用いて再度PDFに書き出すことでフォント埋め込みが可能です。
-他の環境の方は、フォントの埋め込み方を調べて実施してください。
-
-== ちょっとした注意点
-
-自分自身が陥った罠なのですが、「デザインに凝ると時間が無限に必要」です。
-まずは内容を完成させましょう。
-最悪、デザインはシンプルでも内容が充実していれば伝わります。
-逆に、デザインが良くても内容が不十分だと読者はがっかりします。
-この順番は間違えないようにしてください。
-#@# textlint-disable
-（自分にも言い聞かせよう。。。）
-#@# textlint-enable
-
-= 独自設定の説明
-
-//imagetalkl[grandpa]{
-だいたいわかったかの？
+//imagetalkl[mai_nutoral]{
+複数ホスト上にコンテナを立てて連携できるツールとして紹介したね。このKubernetesを使って複数コンテナで構成したルーターやDNS機能も含めた仮想ネットワークを、複数ホスト上に構築して負荷分散を行う構成を作ることができる。
 //}
 
-//imagetalkr[mago]{
-うん！わかったー！だけど、デザインに凝りすぎるのもよく無いね。気をつけよー。
+//imagetalkr[akina_nutoral]{
+コンテナだけじゃなくて仮想のネットワークを作れるのはすごいですね。
 //}
 
-//imagetalkl[grandpa]{
-そうじゃな。あくまでも内容が一番大切じゃ。
+//imagetalkl[mai_nutoral]{
+本当に便利だね。仮想ネットワークで構築したサービスを複数ホスト上に構成することで、一つのホストマシンが障害等でダウンしてしまったとしても、他のホストが生きてさえいれば継続してサービスを稼働させることができる。サービスの耐障害性という点でも信頼できる構成を作ることができる。これをサービスのクラスター化と呼ぶんだ。
 //}
 
-//imagetalkr[mago]{
-次はなんの説明なの？
+//imagetalkr[akina_ooo]{
+クラスター化はよく聞いてましたけど、ここまで準備するものなんですね。
 //}
 
-//imagetalkl[grandpa]{
-次は、このリポジトリの独自設定の説明じゃ。Re:VIEWの拡張など、少し特殊なことをやっておる。その説明をするぞい。
+//imagetalkl[mai_nutoral]{
+そうだね。便利な分、構築には知識と時間が必要だ。ただ、このKubernetesを使った構成は一度作ってしまえば再構築が非常に簡単にできる。設定を記述したファイルといくつかのコマンドだけで環境の再現ができるんだ。このような環境構成を設定ファイルなどに明示的に記載して、ツールなどで再現可能な環境構成を作る働きかけをInfrastructure as Code(IaC)と呼ぶんだ。
 //}
 
-//imagetalkr[mago]{
-はーい！
+//imagetalkr[akina_ooo]{
+それも聞いたことあります！なんとなく遠いものに思って聞き流してましたけどこういう物のことを言うんですね。いや・・・うーん、やっぱり遠い・・・。
 //}
 
-//pagebreak
-
-さて、次はグランパのいうとおり「このリポジトリの独自設定」を説明します。
-編集の参考にしてみてください。
-
-== 大扉のデザイン
-
-大扉のデザインは、自分のCSS力では難しかった（CSSだけで表現できなかった）ので、Rubyのライブラリ @<code>{Nokogiri} を用いてhtmlを編集しています。
-@<code>{in_docker.mk} の次の部分がhtml生成箇所です。
-
-//emlist[][]{
-html:
-	cd articles/ && \
-		review-epubmaker config.yml && \
-		review-epub2html book.epub | \
-		bundle exec ruby ../scripts/html-ext.rb > book.html
+//imagetalkl[mai_ahaha]{
+あはは！まぁこのあたりまで来るとアプリケーション系のエンジニアはやっぱり分野が違うように思うよね！でもこういう技術があることは覚えておくと後々絶対役に立つよ！
 //}
 
- * @<code>{config.yml} をもとにepubを生成
- * @<code>{review-epub2html} でepubをひとつのhtmlに変換
- * @<code>{./scripts/html-ext.rb} を通してhtmlタグを修正
- * htmlに出力
-
-必要なhtml要素が準備できたら、後はCSSを編集するだけです。
-@<code>{./articles/style.css} も参考にしてみてください。
-
-また、これらのデザインを決める際は @<code>{make browser} を用いてブラウザに表示し、CSSを直接いじって試行錯誤を繰り返しました。
-
-== 目次のデザイン
-
-これも大扉の場合と同じです。
-@<code>{./scripts/html-ext.rb} を用いて目次部分に必要なhtmlタグを追加し、CSSでデザインを適用しています。
-
-== 見出しのデザイン
-
-こちらは純粋にCSSだけで実現しています。
-生成される @<code>{./article/book.html} の中身をみて、いろいろ試行錯誤しました。
-お好きな形に変更していただいてかまいません。
-
-== 「コラム」や「問題」「答え」のデザイン
-
-「コラム」や「問題」「答え」のデザインは、Re:VIEWの公式の拡張 @<code>{./articles/review-ext.rb} を使っています。
-拡張に関しては、次の「Re:VIEW のモンキーパッチによる拡張の基本」と @<code>{./articles/review-ext.rb} を参考にしてください。
-
- * Re:VIEW のモンキーパッチによる拡張の基本
- ** https://review-knowledge-ja.readthedocs.io/ja/latest/reviewext/review-ext-basic.html
-
-拡張したコマンドによって生成されたhtmlに対し、CSSを適用しています。
-もちろん、色やマージンなどの微調整も可能です。
-
-===[mycolumn] コラム
-
-//emlist[]{
-===[mycolumn] コラム
-
-こんな感じでコラムを書いています。
-
-===[/mycolumn]
+//imagetalkr[akina_niko]{
+わかりました。覚えておきます！
 //}
 
-==== 見出しも書けます
+== クラウド化
 
-見出しも書けていますね。
-
-===[/mycolumn]
-
-===[question] 問題
-
-これは問題です。次のように書いています。
-
-//emlist[]{
-===[question] 問題だよ
-
-これは問題です。以下のように書いています。
-
-===[/question]
+//imagetalkl[mai_nutoral]{
+さて、Kubernetesによるクラスター化やIaCについて触れてきたけど、そろそろ覚えてもいいころ合いの話題が一つある。「クラウド化」だ。
 //}
 
-キャプションの文字列は「問題だよ」のように任意の文字列を設定できます。
-
-===[/question]
-
-===[answer] 答えだよ
-
-これは答えです。「問題」と同様、キャプションの文字列は自由に設定できます。
-
-//emlist[]{
-===[answer] 答えだよ
-
-これは答えです。「問題」と同様、キャプションの文字列は自由に設定できます。
-
-===[/answer]
+//imagetalkr[akina_nutoral]{
+ここまできてやっとクラウドですか！遠いなぁ。
 //}
 
-//cmd{
-$ sw_vers | grep Product
-ProductName:    Mac OS X
-ProductVersion: 10.13.6
+//imagetalkl[mai_nutoral]{
+そうだね。言ってみればクラウドってものは今までの技術の集大成、専門家が多くの時間と資金をかけて作り上げた仮想インフラだ。
+//}
 
-$ docker -v
-Docker version 18.09.1, build 4c52b90
+//imagetalkr[akina_nutoral]{
+仮想インフラってことはどこかに物理マシンが存在するんですか？
+//}
 
-$ docker-compose -v
-docker-compose version 1.23.2, build 1110ad01
+//imagetalkl[mai_nutoral]{
+存在するよ。と言っても大手のクラウドはセキュリティの観点からどこに物理マシンがあるかは公表しないけど、巨大なデータセンターを保持していてそこの物理マシンを仮想インフラに組みなおしてクラウドサービスを展開している。
+//}
 
-$ make -v
-GNU Make 3.81
+//imagetalkr[akina_nutoral]{
+Kubernetesの話で複数ホストの話がありましたけど、データセンターも複数あるんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+そうだね。世界中にデータセンターを配置してどこで自然災害や戦争が起きてもクラウドサービス自体は動き続けるように組み上げられてるね。
+//}
+
+//imagetalkr[akina_ooo]{
+おぉ・・・すごい規模ですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+やっぱりその分専門業者しかクラウドサービスを展開できないけどね。必要な元手が大きすぎる。Amazon、Google、Microsoftどれも超巨大企業だ。
+//}
+
+//imagetalkr[akina_nutoral]{
+でも、なんで今のタイミングでクラウドの話なんですか？前フリが長いような。
+//}
+
+//imagetalkl[mai_nutoral]{
+必要なんだよなぁ、これが。あきなちゃんはクラウドは何か触ったことある？
+//}
+
+//imagetalkr[akina_nutoral]{
+いや、ないです。
+//}
+
+//imagetalkl[mai_nutoral]{
+OK、クラウドサービスを使う際には最初はWEBブラウザからアクセスすることになる。WEBページでGUIが構成されてるからね。んで、画面の指示に従って操作していくとブラウザ操作だけでコンテナ化されたマシンを借りることができる。
+//}
+
+//imagetalkr[akina_ooo]{
+ブラウザ操作だけでですか！すごいですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+便利な時代になったよね。でも結局、ブラウザ経由でDockerのような仮想コンテナツールを操作してるようなものなんだよね。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、そう考えたらシンプルですね。クラウドって聞くとなんとなくすごいって思ってましたけど、案外身近ですね。
+//}
+
+//imagetalkl[mai_niko]{
+まぁそれを実現するまでの裏方だったり洗練された画面操作方法の作りだったり、中々まねできないものも多いけど、仕組み自体はこれまでの知識で大方理解できるね！あきなちゃんも成長したね！えらい！
+//}
+
+//imagetalkr[akina_iyasono]{
+急に褒められても・・・いや、ありがとうございます。もっと勉強してお役に立てるように頑張ります！
 //}
 
 
-===[/answer]
+== サーバーレス化
 
-//pagebreakforce
-
-== 吹き出しのデザイン
-
-//imagetalkl[grandpa]{
-左側の吹き出しじゃ。
+//imagetalkl[mai_nutoral]{
+クラウド化の威力と恩恵を学んだところで、クラウドサービスの最大の恩恵、サーバレス化についても学んでおこう。
 //}
 
-//imagetalkr[mago]{
-右側の吹き出しだよー！
+//imagetalkr[akina_ettu]{
+サーバーレスって、名前は聞きますけどどういうことですか？クラウドでサーバーを借りるはずなのに「レス」って「無い」って意味ですよね？
 //}
 
-//imagetalkl[grandpa]{
-長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。長文にも対応しておるぞ。
+//imagetalkl[mai_nutoral]{
+覚え方的には、「サーバーのことを気にかける必要が無い」って方がいいね。使う側はアプリケーション用のコードを記述してサービスに登録するだけで、サーバーの稼働状態を気にすることなくアプリケーションを稼働させ続けることができる。
 //}
 
-//imagetalkr[mago]{
-改行にも対応しているよ！
-改行にも対応しているよ！
-改行にも対応しているよ！
-改行にも対応しているよ！
-改行にも対応しているよ！
+//imagetalkr[akina_ettu]{
+サーバーの稼働状態を気にしないでアプリケーションが動かせる？？最強じゃないですか！
 //}
 
-前回の技術書典にて頒布した本で、一番やりたかったことです。
-こちらもRe:VIEWの公式の拡張 @<code>{./articles/review-ext.rb} を使っています。
-次の独自コマンドを作成し、 @<code>{.re} ファイルで使用しています。
-
- * @<code>{imagetalkl（image-talk-left）}
- * @<code>{imagetalkr（image-talk-right）}
-
-@<code>{*.re} ファイルで使用している箇所があるので探してみてください。
-
-//pagebreakforce
-
-ひとつ注意点があります。
-RE:VIEWでは、同じ画像ファイルを複数回使うと「警告：画像IDが重複しています」と出力されます。
-
-//cmd{
-WARN: warning: duplicate ID: grandpa (#<ReVIEW::Book::ImageIndex::Item:0x0055e62fb5fd18>)
-WARN: warning: duplicate ID: grandpa (#<ReVIEW::Book::ImageIndex::Item:0x0055e62f52ef20>)
-WARN: warning: duplicate ID: mago (#<ReVIEW::Book::ImageIndex::Item:0x0055e62f52edb8>)
-WARN: warning: duplicate ID: grandpa (#<ReVIEW::Book::ImageIndex::Item:0x0055e62f52ec28>)
-WARN: warning: duplicate ID: mago (#<ReVIEW::Book::ImageIndex::Item:0x0055e62f52ea98>)
+//imagetalkl[mai_niko]{
+まさにクラウドサービスの粋、マグロでいうとトロの部分だよね！コードを書くことを本業とする人たちにとってはまさに、インフラを気にしなくていい実行環境だ。もちろんコードの書き方に特徴や制限があるけどね。
 //}
 
-最終生成物には影響はありませんでした。
-気になる方はPRをいただけると幸いです。
-
-= やりたかったこと
-
-//imagetalkr[mago]{
-Re:VIEW+CSS組版環境！これ完璧じゃん！
+//imagetalkr[akina_ooo]{
+それでも、魅力的すぎます。
 //}
 
-//imagetalkl[grandpa]{
-ふむー、実はそうでもないんじゃよ。
+
+//imagetalkl[mai_nutoral]{
+そうだよね、実際サーバーレスサービスは多くのクラウドで利用されていて、サーバーを1台も借りてないけどサーバーレスアプリはいくつか運用しているっていうところもあるね。
 //}
 
-//imagetalkr[mago]{
-えー！そうなの？？
-どのあたり？
+//imagetalkr[akina_nutoral]{
+そんな使い方をするケースもあるんですね。サーバーを一つ立ち上げるのに苦労する時代とは大違いですね。
 //}
 
-//imagetalkl[grandpa]{
-そうじゃなぁ。ちょっと話そうかのう。
+//imagetalkl[mai_nutoral]{
+今の日本でもそういう仕事をしているところはまだまだあるから過渡期って感じだけどね。何か制約があるならまだしも「分からないから」「使ったことがないから」なんて理由で敬遠してちゃいけないね。
 //}
 
-//pagebreak
-
-== 「柱」に章・節を表示したい
-
-各ページの上部に、章や節の見出しの文字列が表示されます。
-これを「柱」と言います。
-現状では「Re:VIEW+CSS組版環境構築」と表示されています。
-これは @<code>{style.css} にハードコーディングされています。
-使い回す際は書き換えてください。
-
-この柱には、章・節を表示したいです。
-CSSの機能で表示できるかと思っていましたが、なかなかうまくできませんでした。
-
-== CSSをいい感じにしたい
-
-@<code>{./articles/style.css} にべた書きしています。
-CSS周りの知識が乏しいので、現状だとこのようになっています。
-もっと扱いやすくできるはずですので、適宜アップデートしていきます。
-
-== フォントを豊富にしたい
-
-フォント周りの知識も乏しいので、自由に入れられる環境になっていません。
-現在はそれっぽいフォントを選択していますが、もっと自由度を上げていきたいです。
-
-== 脚注をいい感じにしたい
-
-脚注に関してはノータッチです。
-もしうまくできた方は、ご一報ください。
-
-
-//pagebreak
-//pagebreak
-
-このように、やりたいことはまだまだたくさんあります。
-時間に余裕があった場合は、適宜アップデートしていく予定です。
-#@# textlint-disable
-（あまり期待はしないでください。。。）
-#@# textlint-enable
-
-= テストページ
-
-//imagetalkr[mago]{
-テストページって何？
+//imagetalkr[akina_ooo]{
+むむむ・・・頑張って覚えないとですね。
 //}
 
-//imagetalkl[grandpa]{
-ここは、動作確認のために使うページじゃぞい。
+
+//imagetalkl[mai_ahaha]{
+無理しない程度にね！あ、そうそうサーバーレスサービスを使うにあたってコード側で気をつけなきゃいけないことがある。それはAPIベースの設計に従うってことだ。WEB APIしかり、コードを機能ごとに分離する設計が必要になるんだ。
 //}
 
-//imagetalkr[mago]{
-へー。何の動作確認なの？
+//imagetalkr[akina_hee]{
+なるほど、細かい機能ごとにコードが分離されている方がテスト容易性や再利用性が高いんですよね！
 //}
 
-//imagetalkl[grandpa]{
-コードの埋め込みやPlantUMLの描画などじゃ。
+//imagetalkl[mai_niko]{
+そうそう！そしてその再利用性の部分に強くフォーカスした考えが「マイクロサービス」と言う設計思想につながっているんだ。
 //}
 
-//imagetalkr[mago]{
-ふーん。
+
+
+== マイクロサービス
+
+
+//imagetalkr[akina_nutoral]{
+マイクロサービスですか。これも名前だけ聞いたことがあるってだけですね・・・。
 //}
 
-//pagebreak
 
-== コードの埋め込み
-
-Re:VIEWには外部ファイルを埋め込む機能があります。
-
-//emlist[コードの埋め込み][crystal]{
-#@mapfile(../code/sample.cr)
-class Foo
-  def display(str : String)
-    puts str
-  end
-end
-
-foo = Foo.new
-foo.display("Hello!!") # => Hello!!
-#@end
+//imagetalkl[mai_nutoral]{
+マイクロサービスはAPIベース設計とシナジーの高い考え方なんだけど、特定の機能をWEB APIやサーバーレス化したサービスとして分離して、開発の焦点を細かい単位に分解して複雑なシステムの開発を避ける設計思想だね。アーキテクチャレベルの考え方が必要だから「マイクロサービスアーキテクチャ」なんて呼ばれることも多いね。
 //}
 
-このコードは @<code>{./code/sample.cr} に書かれているものです。
-@<code>{review-preproc --replace *.re} のコマンドを実行し、 @<code>{*.re} 内に書かれている @<code>{@mapfile} 命令を置換します。
-
-== PlantUML
-
-Re:VIEWは @<code>{glaph} 命令でPlantUMLを描画できます。
-次のコードを @<code>{glaph} 命令に書くことで、次のような図を埋め込むことができます。
-
-//list[sample_uml_code][PlantUMLのコード]{
-@startuml
-Foo .r.> Bar
-
-class Foo {
-    + display() : Nil
-}
-
-class Bar {
-    + display() : Nil
-}
-@enduml
+//imagetalkr[akina_nutoral]{
+アーキテクチャ単位の考え方になるんですね。
 //}
 
-//graph[sample_uml_graph][plantuml][PlantUMLの描画]{
-@startuml
-Foo .r.> Bar
-
-class Foo {
-    + display() : Nil
-}
-
-class Bar {
-    + display() : Nil
-}
-@enduml
+//imagetalkl[mai_nutoral]{
+言ってみれば特定の機能だけ切り出して別サーバーに乗せるようなものだからね。それが複数のサブシステム間で呼べるように設計するには、やっぱりアーキテクトが情報整理をしなくちゃいけないね。
 //}
 
-この他、できることが分かり次第、随時追加していきます。
+//imagetalkr[akina_nutoral]{
+なるほど。でもなんだかコードとか機能単位の考え方なのか、アーキテクチャ単位の考え方なのか、ごっちゃになってしまいそうです。
+//}
+
+//imagetalkl[mai_nutoral]{
+実際日本でこのアーキテクチャの浸透が遅れてるのはそこの分業の制度のかみ合わなさが大きいと思うね。設計ができてコードを考えられてアーキテクチャ設計をできる人が少なすぎる。
+//}
+
+//imagetalkr[akina_nutoral]{
+たしかにそこまでできたら本当になんでも屋ですね。
+//}
+
+
+//imagetalkl[mai_tohoho]{
+会社で育ってもどんどん別の会社に行っちゃいそうだしね。まぁ、なんにせよマイクロサービスアーキテクチャでものを考えられる体制があれば様々なシーンで恩恵が受けられるようになるんだ。例えば再利用性の観点からも、作成したマイクロサービスを全く別の用途で活用することができるかもしれないということが挙げられるね。
+//}
+
+//imagetalkr[akina_nutoral]{
+全く別ですか？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+例えば社内の人事関連の管理機能をマイクロサービス化したとしよう。マイクロサービスの運用管理は人事の受け持ち人員で行われるけど、その機能を経理や総務のサービスの一部で活用することができるようになるんだ。たとえば、少し前のうちの会社の交通費関連申請は総務担当だったけど、総務は月の清算の度に人事に最新の社員名簿をもらってきて逐一エクセルファイルで照らし合わせをしなきゃいけなかったんだ。
+//}
+
+//imagetalkr[akina_ugee]{
+なんですかその地獄は。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+ここしばらくで最新人事表などの一部の機能をマイクロサービス化してプログラムから取得できるようになったおかげで、照らし合わせを人手でやる必要がなくなったんだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+それなら一安心です。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+おととしあたりから経理も一部をマイクロサービス化して情報参照をできるようにしたんだけど、経理と人事のマイクロサービス化のおかげで総務と労働組合の支給金の確認の人手が大幅に削減できたって言ってたね。
+//}
+
+//imagetalkr[akina_nutoral]{
+組合とですか。そんなこともできるんですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+マイクロサービスを作って形式化しちゃえばちょっとの事務処理なんてサクサクよ！
+//}
+
+//imagetalkr[akina_ooo]{
+おお、言いきっちゃうのもすごいですけど確かにそれくらいのパワーはありそうですね！
+//}
+
+== セキュリティ強化
+
+//imagetalkl[mai_nutoral]{
+ここまで基礎知識からサーバーレスアーキテクチャ、マイクロサービスの設計思想などインフラにまつわる様々な知識を学んできたけど、最後の仕上げとして、セキュリティについて学んでいこうと思う。
+//}
+
+//imagetalkr[akina_ooo]{
+セキュリティですか。私に理解できるか不安ですが・・・。
+//}
+
+//imagetalkl[mai_nutoral]{
+基本的には「どう実現するか」というより「何をしたいか」を学ぶから、そこまでややこしいものではないよ！ひとつひとつ、ゆっくり見ていこう！
+//}
+
+//imagetalkr[akina_niko]{
+よろしくお願いします！
+//}
+
+=== ポートスキャン攻撃対策
+
+//imagetalkl[mai_nutoral]{
+セキュリティの観点で一番シンプルなリスクはサーバーの解放ポートの穴をつく「ポートスキャン攻撃」だ。
+//}
+
+//imagetalkr[akina_nutoral]{
+前にも出てきましたね。空いているポートを洗い出す攻撃でしたっけ。
+//}
+
+//imagetalkl[mai_niko]{
+そうだね！よく覚えてるね！
+//}
+
+//imagetalkr[akina_nutoral]{
+でも、空いているポートがあったとして、何が危険なんですかね？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+踏み込んで言うなら空いているポートが何かを知ることで、サーバーの用途を推察することができるね。取りえず到達したサーバーの用途を侵入者が最初から分かるわけでは無いからね。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、下調べ的な話ですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+そうそう、基本的にはサービス開発者側が明示的に使用するポート以外は開けないことが前提になってるね。あとは、アプリケーションサーバーより手前の段階で接続可能なポートを指定するファイアウォールを設定することが多いね。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、ファイアウォールってこういうものを指すんですね。よくわかってませんでした。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+ポートだけじゃなくて通信内容を調べるファイアウォールもあるから、実際の業務の前にはもっと調べた方がいいけどね。一旦は、そういうものがあるってぐらいにしておこう。
+//}
+
+=== 公開インターフェースのTSL化
+
+//imagetalkl[mai_nutoral]{
+次はTSL化についてだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+TSLってなんですか？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+HTTPをHTTPS化する際に参照する暗号化方式の名前だね。基本的には通信の盗聴やなりすましの防止を行う方法だ。
+//}
+
+//imagetalkr[akina_nutoral]{
+盗聴とかなりすましとか、実際の詐欺みたいですね。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+それになぞらえた事件というか事例があったんだよね。まずは盗聴についてだけど、これはサーバー側とウェブブラウザ側で暗号化した通信を行ってサーバー側で復号して通信を行うね。
+//}
+
+//imagetalkr[akina_nutoral]{
+どうやって暗号化するんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+公開鍵認証方式っていうんだけど、まずサーバーとブラウザで同じ公開鍵を共有してそれで暗号化する。その次にサーバーに送られてきた通信をサーバーしか持たない秘密鍵で復号化して通信を行う。サーバーは公開鍵で暗号化できて秘密鍵で復号できる鍵のセットを記憶しておかなきゃいけないんだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、暗号化が公開鍵で、復号が秘密鍵ですか。それなら確かに横から暗号を読み解くことはできないかもしれません。
+//}
+
+//imagetalkl[mai_nutoral]{
+いいね！いい理解だ。次になりすましについてだね。暗号化したところで通信しに行ったサーバーが何者かによって置き換えられていたとしよう。なんの気構えもしていなければ気づかずに通信してしまって重要なデータを送信してしまうかもしれない。
+//}
+
+//imagetalkr[akina_nutoral]{
+そんなことがあるんですか。
+//}
+
+//imagetalkl[mai_nutoral]{
+あったんだよね。それで編み出されたのが公開鍵を第三者から信頼性を証明してもらう方式だ。
+//}
+
+//imagetalkr[akina_nutoral]{
+公開鍵に免許証みたいな証明書機能を持たせるんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+そうだね！免許証なら免許番号を照らし合わせれば偽造でないかが分かるよね。
+//}
+
+//imagetalkr[akina_nutoral]{
+まぁ、どこで照合するのかは知らないですが恐らくそうですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+インターネットの世界にもその証明書が正しいものを証明する機関を置いて管理しようということになったんだ。
+//}
+
+//imagetalkr[akina_ettu]{
+あれ、なんかドメイン名の話に似ているような。
+//}
+
+//imagetalkl[mai_niko]{
+確かに似ているね。実際公開鍵や証明書の登録はドメイン名単位で行われることが多いからドメイン登録と近しいタイミングで証明書の発行を行うケースも多いんだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、それで証明書が発行されればなりすましされずに安全な方法で通信できるんですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+そうだね！TSLに関しては細かいバージョンもあるから、実際の業務の際には調べたり周りの人と相談しながら仕事を進めよう。
+//}
+
+//imagetalkr[akina_nutoral]{
+わかりました。
+//}
+
+
+=== DDoS対策
+
+//imagetalkl[mai_nutoral]{
+さて、次はDDoS攻撃とその対策だ。
+//}
+
+//imagetalkr[akina_ettu]{
+あ、DDoSってなんか聞いたことあります。沢山のコンピュータから標的に大量にアクセスするヤツですか。
+//}
+
+//imagetalkl[mai_niko]{
+そうだね！素晴らしい！問題はその大量アクセスのせいでサーバーに負荷がかかりダウンしてしまうことだね。ただ、クラウドを使ってサービスを公開する場合、クラウドの機能としてDDoSを防ぐことができるオプションもあるから、しっかり調べながら使っていこう。
+//}
+
+//imagetalkr[akina_nutoral]{
+クラウド側で用意されているんですか？すごいですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+もともと大手のウェブサイトを運用していた経験からそれらの知見を活かしてサービスとして提供しているんだろうね。まぁそれほどメジャーな攻撃なわけだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、準備をしないのは怖いですね。
+//}
+
+
+=== SQLインジェクション対策
+
+//imagetalkl[mai_nutoral]{
+つぎにSQLインジェクション攻撃とその対策だね。
+//}
+
+//imagetalkr[akina_ettu]{
+インジェクション？なんですかこれ。
+//}
+
+//imagetalkl[mai_nutoral]{
+Webサーバーとの通信時に悪意のあるSQL文をメッセージに流して、開発者の意図しないDBサーバーへの操作を行う攻撃だね。
+//}
+
+//imagetalkr[akina_ugee]{
+ええ？？怖いですねそれ。
+//}
+
+//imagetalkl[mai_nutoral]{
+まぁ、リクエストにSQL文を直接書くなんて方式のWebサービスを公開する人は今の時代いないだろうけどね。なにかしらプログラムのオブジェクトに置き換える方法で実装することになるはずだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、なら安心ですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+ただ、万が一ってこともあるから気を付ける必要があるね。あとはクラウド側でもSQLインジェクションの脆弱性がないかチェックしてくれる機能も提供されているから、そのあたりを有効活用できるといいね。
+//}
+
+//imagetalkr[akina_niko]{
+また勉強するものが増えました。でも頑張ってみます！
+//}
+
+//imagetalkl[mai_niko]{
+おお！がんばろう！
+//}
+
+=== 認証方式
+
+//imagetalkl[mai_nutoral]{
+ここまででサイトやサービスをどう守るかという視点でのセキュリティ対策を見てきたけど、他にもセキュリティ対策にはいろんな視点がある。その例の一つがユーザーの認証を行う方式についてだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+ユーザー管理というか、ユーザーログイン機能はとても基本的なことだと思ってましたが、何か特別な対策が必要なんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+すごい簡単に言ってしまうと、サイトやサービスに表示される操作が可能な人とそうでない人をどう分けるかといったケースで注目されるね。自分のブログを誰かに更新されないための仕組みだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+あ、そうか。twitterやinstagramも自分以外が触れたら危険ですもんね。
+//}
+
+//imagetalkl[mai_nutoral]{
+そうそう、そのユーザー管理の方法がひいては開発リソースへのアクセス管理という側面からも語られるようになってきている。リモートワークが浸透してきた今なら、猶更だね。
+//}
+
+//imagetalkr[akina_ooo]{
+なるほど、具体的にはどんな方式があるんですか？
+//}
+
+
+==== ベーシック認証
+
+//imagetalkl[mai_nutoral]{
+まず最も基本的な認証方式が「ユーザーアカウント」と「パスワード」でログイン管理するベーシック認証だ。
+//}
+
+//imagetalkr[akina_nutoral]{
+直訳したら基本、ですね。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+そう、基本中の基本。ユーザーの管理機能をつけたかったらまずこれを作るところから始まるね。
+//}
+
+//imagetalkr[akina_nutoral]{
+どうやって作るんですか？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+パスワードを暗号化してDBにいれて、ユーザーアカウントと紐づけておくんだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+DBに暗号化ですか。確かに暗号化してなかったらDBの管理人が個人の情報を直接見れちゃいますもんね。
+//}
+
+//imagetalkl[mai_nutoral]{
+そうだね。あとは暗号化・復号化の鍵をDBを触る人が直接触れないようにしておくのが大切だね。
+//}
+
+//imagetalkr[akina_nutoral]{
+DBを触る人が鍵を触れないようにするって、アプリケーション側で鍵を持っておくってことですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+そうだね。少なくともDBを触れて、かつ復号化可能な鍵を触る人が生まれないようにすることが重要だね。
+//}
+
+//imagetalkr[akina_ettu]{
+そのあたりって、バグとかトラブル対応の時に大変じゃないですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+暗号化や復号化を全部通した状態で挙動を確認するのは開発のテストまでにおさめておきたいね。もし万が一本番運用後に必要になった場合でも、別途セキュリティ報告書とかを作って別の人が監査可能な形で操作を行えるようにするべきだね。
+//}
+
+//imagetalkr[akina_nutoral]{
+厳重な管理が必要なんですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+万が一のことが起きたら会社の信用が吹っ飛ぶからね。こればっかりは慎重さが第一だ。
+//}
+
+==== 二段階認証
+
+//imagetalkl[mai_nutoral]{
+次は二段階認証だ。さっきのユーザーパスワードに加えてログインするごとに登録時に保存しておいた他の連絡手段に通知やワンタイムパスワードを送ってログインを再確認する方法だね。電話番号でやり取りできるSMSメッセージでのワンタイムパスワードが広く用いられてるね。
+//}
+
+//imagetalkr[akina_hee]{
+よく見ますね！銀行とかクレジット明細の確認とかはよく通知が来るイメージです。
+//}
+
+//imagetalkl[mai_nutoral]{
+そうだね。実際のお金周りがからむアプリは率先して導入しているね。
+//}
+
+//imagetalkr[akina_nutoral]{
+やっぱり大事なものはしっかり守ってもらわなくちゃですね。
+//}
+
+==== 生体認証
+
+//imagetalkl[mai_nutoral]{
+次は生体認証だ。
+//}
+
+//imagetalkr[akina_nutoral]{
+顔認証とかですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+そうだね。スマホの基本機能として実装されつつあるから、スマホを誰かに使われないっていう点ではとても安心できる機能だね。
+//}
+
+//imagetalkr[akina_nutoral]{
+キャッシュレス決済アプリとかでよく見る気がします。
+//}
+
+//imagetalkl[mai_nutoral]{
+たしかにね。やっぱりお金にかかわるものは重要だ。顔認証ならめんどくさく無いし、安全でとてもありがたいね。銀行のアプリでもPCログインは２段階認証、スマホのログインは生体認証っていう形にしてるアプリもあるね。
+//}
+
+//imagetalkr[akina_ooo]{
+仕組みとしては全く違いそうですが、本人が実際に操作していることが分かればいいんですもんね。なるほどなぁ。
+//}
+
+==== OAuth2.0
+
+//imagetalkl[mai_nutoral]{
+次はOAuth2.0についてだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+オーオース?初めて聞きました。
+//}
+
+//imagetalkl[mai_nutoral]{
+簡単に言うとtwitterやfacebookから連携アプリにログインしている時の機能だね。
+//}
+
+//imagetalkr[akina_hee]{
+ああ、あれですか！
+//}
+
+//imagetalkl[mai_nutoral]{
+やっぱり触ったことある？
+//}
+
+//imagetalkr[akina_nutoral]{
+いちいちそれぞれのサイトでパスワードを覚えていられないので、便利でよく使っています。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+まさにその点がOAuth2.0の魅力だね！パスワード管理を個々のサービスでやるよりもセキュリティレベルの高いサービス提供者に管理を任せて、そこから貰った認証結果をもとにアプリを動かすのがOAuth2.0のざっくりとした説明だ。
+//}
+
+//imagetalkr[akina_nutoral]{
+認証結果ってどんなものが貰えるんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+認証トークンといってランダムに見える文字列だね。
+//}
+
+//imagetalkr[akina_nutoral]{
+文字列ですか。でもそれを貰ったからと言ってどうなるんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+認証トークンをアプリケーションのAPIを実行する際に常に送るんだ。操作時間が長くなったりすると認証トークンの期限が切れて、再度ログインを求められる形にするね。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、ログインしっぱなしで誰かに使われるのを防ぐんですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+そうそう。まあページを読み込むたびに自動ログインを有効にしてたらあんまり意味ないけど。
+//}
+
+//imagetalkr[akina_nutoral]{
+たしかに、自動ログインは便利なんですけどね。使いすぎはダメですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+その点、セキュリティレベルがそこまで高くなくて、利便性のみを追求したい場合はOAuth2.0、お金の操作など自分が見ているタイミングでの操作を厳重に守りたい場合は2段階認証や生体認証を使うとかユーザーの触り方を考慮したセキュリティ設定を考えることも重要だね。
+//}
+
+//imagetalkr[akina_nutoral]{
+たしかに、2段階認証はめんどくさいですもんね。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+安全さと便利さのトレードオフだね。まぁでもいいところに落ち着いてると私は思うね。
+//}
+
+//imagetalkr[akina_nutoral]{
+まあ確かに、お金の操作はそもそも慎重になるべきですしね。
+//}
+
+==== OpenIDConnect
+
+//imagetalkl[mai_nutoral]{
+OAuth2.0の話をしたところで確認したいのが、OAuth2.0は認証・認可のうち、認可の機能しかないって点だね。
+//}
+
+//imagetalkr[akina_ettu]{
+はぇ？何言ってるんですか？ちゃんと本人確認してますよね？
+//}
+
+//imagetalkl[mai_nutoral]{
+してる。より厳密にいうと、生体認証とかは本人が操作することを想定しているけど、OAuth2.0は本人が許可したアプリケーションが操作を実行することを想定しているんだ。
+//}
+
+//imagetalkr[akina_ettu]{
+んん？結局本人がアプリケーションを操作しているから同じじゃないんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+より分かりやすく言うと、アプリケーションに操作を委任しているとも言えるね。
+//}
+
+//imagetalkr[akina_nutoral]{
+それはそうかもしれないですけど・・・でも、どうやったら認証の機能になるんですか？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+認証・認可を出す側がどのアプリケーションが実行を求めているかを管理するようになること、さらにそれぞれのアプリケーションごとに実行できる権限レベルを変えられることだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+あれ、OAuth2.0はそれをしてないんですか？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+OAuth2.0を使ってるアプリで認可元のアプリのどの機能を使うかっていうのは連携時に確認する決まりになってはいる。ただ、実際に実行不能の制約を書けるかどうかはOAuth2.0の規格の中には含まれていないんだ。
+//}
+
+
+//imagetalkr[akina_nutoral]{
+そうなんですか。規格に含まれているかどうかが重要なんですね。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+規格としても厳密に定めるためには実現方法まで定義しないといけないからね。今回でいうと認証はOAuth2.0の着眼点とは少し違うということだね。そこで提唱されているのがOpenID Connectだ。これはアプリケーションやソフトの実行時ごとに認証・認可元に対して随時、認証・認可を問い直す方式だね。
+//}
+
+//imagetalkr[akina_nutoral]{
+随時問い直すんですか？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+そう、毎回の認証とAPI実行毎に次の実行のための認証トークンが送られてくる。アプリケーション側は毎回そのトークンを決められた暗号鍵で暗号化して再度実行するごとに送りなおすんだ。認証・認可元はそれが正しい鍵で暗号化されていることを検証して成功すれば求められた処理を実行する。
+//}
+
+//imagetalkr[akina_nutoral]{
+なんだか複雑ですね。
+//}
+
+//imagetalkl[mai_nutoral]{
+そうだね。安全のためにはここまで頑張らなきゃだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+毎回トークンを送りなおすって言ってましたけど、操作の間が長く開いちゃったらどうするんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+トークン更新用のAPIを用意しておいてそこにリクエストすることでトークンを更新していくんだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+その更新を誰かがなりすましたりはしないんですか？
+//}
+
+//imagetalkl[mai_nutoral]{
+トークン更新用のAPIも、直前のトークンがないと実行できないようにしておくんだ。こうしておけばアプリケーションサーバーに侵入されたとしても直前のトークンはメモリ上にしか残らないから相当なことをしない限り盗聴はできないね。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど。メモリ上ですか。あれ、OAuth2.0はどうなんですか？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+認証・認可元に登録しているAPIキーとかは暗号化して環境変数に入れてたりするね。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど、暗号化しているとはいえ、サーバーに侵入されたらのぞき見られる可能性があるんですね。
+//}
+
+
+//imagetalkl[mai_nutoral]{
+そう、その点OpenID Connectはよりセキュリティレベルが高いといえる。
+//}
+
+//imagetalkr[akina_nutoral]{
+大切ですね。あれ、でもAPIを実行するのがなりすましできなさそうなのは分かったんですが、実行権限がどうのこうの言ってたのはどうなるんですか？
+//}
+
+
+//imagetalkl[mai_nutoral]{
+アプリケーションなどのAPI実行主体がなりすまし不可能になることで、管理側もどのアプリケーションが実行を求めているかが分かるようになる。これで初めて管理側もどのアプリケーションにどれほどの強さの権限を付与するかを管理することができるようになるんだ。
+//}
+
+//imagetalkr[akina_nutoral]{
+なるほど！なりすましができないことが重要なんですね！少しわかった気がします。
+//}
+
+//imagetalkl[mai_niko]{
+いいね！これがOpenID Connectの特徴だ。必要なタイミングで実装できるように覚えておこう！
+//}
+
+//imagetalkr[akina_niko]{
+わかりました！
+//}
+
+
