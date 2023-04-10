@@ -1,6 +1,7 @@
 # encoding: utf-8
 ReVIEW::Compiler.defblock :imagetalkl, 1..2
 ReVIEW::Compiler.defblock :imagetalkr, 1..2
+ReVIEW::Compiler.defblock :imagetalkrn, 1..2
 
 # for backward compatibility
 ReVIEW::Compiler.defsingle :mycolumnbegin, 0
@@ -51,6 +52,29 @@ EOT
   </div>
   <div class="chatting">
     <div class="says_r">
+#{body}
+    </div>
+  </div>
+</div>
+<!--吹き出し終わり-->
+EOT
+  end
+
+  def imagetalkrn(lines, img_id, metric=nil)
+    body = lines.map {|line| "#{line}<br />"}.join
+
+    puts <<EOT
+<!--吹き出しはじまり-->
+<div class="balloon_rn">
+  <div class="faceicon_rn_bg">
+    <div class="faceicon_rn">
+EOT
+    indepimage('', img_id, '', metric)
+    puts <<EOT
+    </div>
+  </div>
+  <div class="chatting">
+    <div class="says_rn">
 #{body}
     </div>
   </div>

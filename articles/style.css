@@ -511,7 +511,8 @@ table {
 /* 吹き出し */
 
 .balloon_l,
-.balloon_r {
+.balloon_r,
+.balloon_rn {
     width: 100%;
     margin: 0;
     overflow: hidden;
@@ -531,6 +532,13 @@ table {
     border: #ffa8d0 2px solid;
 }
 
+.balloon_rn .faceicon_rn_bg {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: #c8c8c8 2px solid;
+}
+
 .balloon_l .faceicon_l_bg {
     float: left;
     margin-right: -90px;
@@ -541,13 +549,20 @@ table {
     margin-right: 10px;
 }
 
+.balloon_rn .faceicon_rn_bg {
+    float: right;
+    margin-right: 10px;
+}
+
 .balloon_l .faceicon_l,
-.balloon_r .faceicon_r {
+.balloon_r .faceicon_r,
+.balloon_rn .faceicon_rn {
     clip-path: circle(30px at 30px 30px);
 }
 
 .balloon_l .faceicon_l div.image,
-.balloon_r .faceicon_r div.image {
+.balloon_r .faceicon_r div.image,
+.balloon_rn .faceicon_rn div.image {
     margin: 0rem;
 }
 
@@ -561,8 +576,14 @@ table {
     margin-right: -6px;
 }
 
+.balloon_rn .faceicon_rn {
+    float: right;
+    margin-right: -6px;
+}
+
 .balloon_l .faceicon_l img,
-.balloon_r .faceicon_r img {
+.balloon_r .faceicon_r img,
+.balloon_rn .faceicon_rn img  {
     width: 60px;
     height: 60px;
     margin: 0px 5px 4px 0px;
@@ -575,14 +596,19 @@ table {
 .balloon_r .faceicon_r img {
     transform: scale(1.0, 1.0) translate(0px, 0px);
 }
+.balloon_rn .faceicon_rn img {
+    transform: scale(1.0, 1.0) translate(0px, 0px);
+}
 
 .balloon_l .chatting,
-.balloon_r .chatting {
+.balloon_r .chatting,
+.balloon_rn .chatting {
     width: 100%;
 }
 
 .says_l,
-.says_r {
+.says_r,
+.says_rn {
     line-height: 1.5em;
     max-width: 300px;
     font-family: "IPAexGothic";
@@ -626,6 +652,24 @@ table {
     border: 12px solid transparent;
     /* 三角形の色 */
     border-left: 12px solid #ffd6e9;
+}
+
+.says_rn {
+    float: right;
+    margin: 5px 15px 5px 0px;
+    /* 吹き出しの背景色 */
+    background: #c8c8c8;
+}
+
+.says_rn:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 7px;
+    right: -22px;
+    border: 12px solid transparent;
+    /* 三角形の色 */
+    border-left: 12px solid #c8c8c8;
 }
 
 /* 改ページ */
